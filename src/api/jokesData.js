@@ -1,22 +1,8 @@
-const endpoint = "https://v2.jokeapi.dev/joke/Any?blacklistFlags=racist,sexist&type=twopart";
-
-const getJokes = () => new Promise((resolve, reject) => {
-    fetch(`${endpoint}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          resolve(Object.values(data));
-        } else {
-          resolve([]);
-        }
-      })
-      .catch(reject);
-  });
-
-  export default getJokes
-  
+export default async function getJokes() {
+    return fetch('https://v2.jokeapi.dev/joke/Any?blacklistFlags=racist,sexist&type=twopart')
+      .then((res) => res.json())
+      .then((data) => ({
+        setup: data.setup || data.joke,
+        delivery: data.delivery || '',
+      }));
+  }
