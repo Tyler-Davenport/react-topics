@@ -1,29 +1,35 @@
+/* eslint-disable lines-around-directive */
+/* eslint-disable import/order */
 'use client';
 
 import React, { useState } from 'react';
+import getJokes from '../../api/jokesData';
+import { Button } from 'react-bootstrap';
+import Joker from '../../components/jokeContainer';
+
 
 export default function Events() {
-  const [eventText, setEventText] = useState('');
-  const [inputValue, setInputValue] = useState('');
+  const [eventText, setEventText] = useState('Joke Generator');
+  const [btnText, setBtnText] = useState('Get A Joke');
+  const [joke, setJoke] = useState({});
+  
+  const setButton = (text) => {
+    setBtnText(text);
+  };
+
+  const getAJoke = () => {
+    getJokes().then((obj) => {
+      setJoke({
+        setup: obj.setup,
+        punchline: obj.delivery,
+      });
+
+      setButton('Get Punchline');
+    });
+  };
 
   const handleClick = () => {
-    setEventText('Button was Clicked!');
-  };
-
-  const handleChange = (event) => {
-    const { value } = event.target;
-    setInputValue(value);
-    setEventText(value);
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setEventText('Form Submitted!');
-  };
-
-  const handleReset = () => {
-    setInputValue('');
-    setEventText('');
+    setEventText();
   };
 
   return (
@@ -37,21 +43,16 @@ export default function Events() {
       </button>
       <hr />
 
-      <h4>Input</h4>
-      <input placeholder="Change Event" value={inputValue} onChange={handleChange} />
-      <hr />
-
-      <h4>Form</h4>
-      <form onSubmit={handleSubmit}>
-        <button type="submit" className="btn btn-info">
-          Submit Event
-        </button>
-      </form>
-      <hr />
-
-      <button type="button" className="btn btn-warning" onClick={handleReset}>
-        Reset
-      </button>
+      <Joker joke={joke} btnText={btnText} />
+      {btnText === 'Get A Joke' || btnText === 'Get A New Joke' ? (
+        <Button type="button" onClick={getAJoke}>
+          {btnText}
+        </Button>
+      ) : (
+        <Button type="button" onClick={() => setButton('Get A New Joke')}>
+          {btnText}
+        </Button>
+      )}
     </>
   );
 }
